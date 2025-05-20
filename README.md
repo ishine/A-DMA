@@ -36,10 +36,10 @@ pip install -e .
 We provide a docker image for easy usage. 
 ```bash
 # Build from Dockerfile
-docker build -t f5tts:v1 .
+docker build -t adma:v1 .
 
 # Run from GitHub Container Registry
-docker container run --rm -it --gpus=all --mount 'type=volume,source=f5-tts,target=/root/.cache/huggingface/hub/' -p 7860:7860 ghcr.io/swivid/f5-tts:main
+docker container run --rm -it --gpus=all --mount 'type=volume,source=f5-tts,target=/root/.cache/huggingface/hub/' -p 7860:7860 ghcr.io/zhikangniu/a-dma:main
 ```
 
 
@@ -51,6 +51,12 @@ You can follow the [instructions](src/f5_tts/train) to prepare datasets for trai
 ```bash
 python src/f5_tts/train/datasets/prepare_libritts.py
 ```
+#### Extract Speech Foundation Model's Features
+We use Speech Foundation Model to extract features for speech alignment. You can use the following command to extract features for LibriTTS dataset after preparing the dataset.
+```bash
+bash extract_features.sh
+```
+
 #### Train the model
 Once your datasets are prepared, you can start the training process.
 
@@ -71,26 +77,8 @@ accelerate launch --mixed_precision=fp16 src/f5_tts/train/train.py --config-name
 Read [training & finetuning guidance](src/f5_tts/train) for more instructions.
 
 
-## [Evaluation](src/f5_tts/eval)
-
-
-## Development
-
-Use pre-commit to ensure code quality (will run linters and formatters automatically):
-
-```bash
-pip install pre-commit
-pre-commit install
-```
-
-When making a pull request, before each commit, run: 
-
-```bash
-pre-commit run --all-files
-```
-
-Note: Some model components have linting exceptions for E722 to accommodate tensor notation.
-
+### 4.Evaluation
+If you want to evaluate the model, please refer to [evaluation guidance](src/f5_tts/eval) for more details. Notably, A-DMA methods doesn't affect the original inference process, so we have same RTF and inference speed as F5-TTS.
 
 ## ❤️ Acknowledgments
 Our work is built upon the following open-source project [F5-TTS](https://github.com/SWivid/F5-TTS). Thanks to the authors for their great work, and if you have any questions, you can first check them on F5-TTS issues.
