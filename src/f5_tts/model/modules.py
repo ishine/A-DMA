@@ -18,6 +18,7 @@ import torchaudio
 from librosa.filters import mel as librosa_mel_fn
 from torch import nn
 from x_transformers.x_transformers import apply_rotary_pos_emb
+
 from f5_tts.model.utils import lens_to_mask
 
 
@@ -731,58 +732,56 @@ class TimestepEmbedding(nn.Module):
         time = self.time_mlp(time_hidden)  # b d
         return time
 
+
 class SpeechAlignMLP(nn.Module):
     def __init__(
-            self,
-            sampling_ratios: Tuple,
-            in_channels: int,
-            channels: int,
-            out_channels: int,
-            groups: int = 1,
+        self,
+        sampling_ratios: Tuple,
+        in_channels: int,
+        channels: int,
+        out_channels: int,
+        groups: int = 1,
     ):
         super().__init__()
         self.sampling_ratios = sampling_ratios
         model = nn.ModuleList([])
         if len(sampling_ratios) > 0:
             for i, _ in enumerate(sampling_ratios):
-                module = nn.Conv1d(in_channels if i==0 else channels, channels, 3, 1, 1)
+                module = nn.Conv1d(in_channels if i == 0 else channels, channels, 3, 1, 1)
                 norm = nn.GroupNorm(groups, channels)
                 act = nn.Mish()
                 model.extend([module, norm, act])
-        model.append(
-            nn.Conv1d(channels, out_channels, 1, 1)
-        )
+        model.append(nn.Conv1d(channels, out_channels, 1, 1))
         self.model = nn.Sequential(*model)
 
     def forward(self, x, ylens):
         # x in (B, T, D)
         mask = lens_to_mask(ylens).unsqueeze(-1)
-        x = F.interpolate(x.transpose(1, 2).contiguous(), size=ylens.max(), mode='linear')
+        x = F.interpolate(x.transpose(1, 2).contiguous(), size=ylens.max(), mode="linear")
         out = self.model(x).transpose(1, 2).contiguous()
         olens = ylens
         return out * mask, olens
-    
+
+
 class TextAlignMLP(nn.Module):
     def __init__(
-            self,
-            reduce_ratios: Tuple,
-            in_channels: int,
-            channels: int,
-            out_channels: int,
-            groups: int = 1,
+        self,
+        reduce_ratios: Tuple,
+        in_channels: int,
+        channels: int,
+        out_channels: int,
+        groups: int = 1,
     ):
         super().__init__()
         self.reduce_ratios = reduce_ratios
         model = nn.ModuleList([])
         if len(reduce_ratios) > 0:
             for i, r in enumerate(reduce_ratios):
-                module = nn.Conv1d(in_channels if i==0 else channels, channels, 3, r, 1)
+                module = nn.Conv1d(in_channels if i == 0 else channels, channels, 3, r, 1)
                 norm = nn.GroupNorm(groups, channels)
                 act = nn.Mish()
                 model.extend([module, norm, act])
-        model.append(
-            nn.Conv1d(channels, out_channels, 1, 1)
-        )
+        model.append(nn.Conv1d(channels, out_channels, 1, 1))
         self.model = nn.Sequential(*model)
 
     def forward(self, x, ylens):

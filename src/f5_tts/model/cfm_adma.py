@@ -22,11 +22,11 @@ from f5_tts.model.modules import MelSpec
 from f5_tts.model.utils import (
     default,
     exists,
-    masked_mean,
     lens_to_mask,
     list_str_to_idx,
     list_str_to_tensor,
     mask_from_frac_lengths,
+    masked_mean,
 )
 
 
@@ -212,8 +212,8 @@ class CFM(nn.Module):
         self,
         inp: float["b n d"] | float["b nw"],  # mel or raw wave  # noqa: F722
         text: int["b nt"] | list[str],  # noqa: F722
-        zs: list[float["b n d"]],
-        zs_lens: list[int["b"]],
+        zs: list[float["b n d"]],  # noqa: F722,F821
+        zs_lens: list[int["b"]],  # noqa: F722,F821
         *,
         lens: int["b"] | None = None,  # noqa: F821
         text_lens: int["b"] | None = None,  # noqa: F821
@@ -277,37 +277,43 @@ class CFM(nn.Module):
         # if want rigorously mask out padding, record in collate_fn in dataset.py, and pass in here
         # adding mask will use more memory, thus also need to adjust batchsampler with scaled down threshold for long sequences
         pred, zs_tilde, zs_tilde_ctc = self.transformer(
-            x=φ, cond=cond, text=text, time=time, drop_audio_cond=drop_audio_cond, drop_text=drop_text, zs_lens=zs_lens, lens=[lens]
+            x=φ,
+            cond=cond,
+            text=text,
+            time=time,
+            drop_audio_cond=drop_audio_cond,
+            drop_text=drop_text,
+            zs_lens=zs_lens,
+            lens=[lens],
         )
 
         # flow matching loss
         loss = F.mse_loss(pred, flow, reduction="none")
         loss = loss[rand_span_mask]
         diff_loss = loss.mean()
-        
-        proj_loss = 0.
+
+        proj_loss = 0.0
         for i, (z, z_tilde_and_z_len) in enumerate(zip(zs, zs_tilde)):
             z_tilde, z_lens = z_tilde_and_z_len
             z_mask = lens_to_mask(z_lens, length=z.shape[1]).float()
             for j, (z_j, z_tilde_j) in enumerate(zip(z, z_tilde)):
                 cos_sim = torch.nn.functional.cosine_similarity(z_j, z_tilde_j, dim=-1)
                 proj_loss += masked_mean(-cos_sim, z_mask[j])
-        proj_loss /= (len(zs) * batch)
+        proj_loss /= len(zs) * batch
 
-        ctc_loss = 0.
+        ctc_loss = 0.0
         for i, z_tilde_and_z_len_ctc in enumerate(zs_tilde_ctc):
             z_tilde_ctc, z_lens_ctc = z_tilde_and_z_len_ctc
             ctc_loss += F.ctc_loss(
-                z_tilde_ctc.transpose(1,0).log_softmax(-1),            # Log probabilities (T, N, C)
-                text,           # Target sequences (N*)
-                z_lens_ctc,     # Length of inputs (N)
-                text_lens,    # Length of targets (N)
-                blank=self.transformer.text_embed.text_embed.num_embeddings,           # Blank token index
-                reduction='mean',  # Reduction method ('none', 'mean', 'sum')
-                zero_infinity=True # Ignore loss if log(0) happens
+                z_tilde_ctc.transpose(1, 0).log_softmax(-1),  # Log probabilities (T, N, C)
+                text,  # Target sequences (N*)
+                z_lens_ctc,  # Length of inputs (N)
+                text_lens,  # Length of targets (N)
+                blank=self.transformer.text_embed.text_embed.num_embeddings,  # Blank token index
+                reduction="mean",  # Reduction method ('none', 'mean', 'sum')
+                zero_infinity=True,  # Ignore loss if log(0) happens
             )
 
-        ctc_loss /= (len(zs_tilde_ctc))
-        
-        
+        ctc_loss /= len(zs_tilde_ctc)
+
         return diff_loss + proj_loss + 0.1 * ctc_loss, diff_loss, proj_loss, ctc_loss, cond, pred

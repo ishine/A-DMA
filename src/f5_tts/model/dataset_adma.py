@@ -1,6 +1,7 @@
 import json
 from importlib.resources import files
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 import torchaudio
@@ -9,7 +10,7 @@ from datasets import load_from_disk
 from torch import nn
 from torch.utils.data import Dataset, Sampler
 from tqdm import tqdm
-import numpy as np
+
 from f5_tts.model.modules import MelSpec
 from f5_tts.model.utils import default
 
@@ -161,7 +162,7 @@ class CustomDataset(Dataset):
             "text": text,
             "audio_path": audio_path,
         }
-    
+
     @staticmethod
     def collate_fn(batch):
         mel_specs = [item["mel_spec"].squeeze(0) for item in batch]
@@ -185,24 +186,25 @@ class CustomDataset(Dataset):
             text=text,
             text_lengths=text_lengths,
         )
-        
+
+
 class CustomDatasetADMA(CustomDataset):
-    def __init__(self,dataset_root, feature_root, *args, **kwargs):
+    def __init__(self, dataset_root, feature_root, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dataset_root = dataset_root
         self.feature_root = feature_root
-        
+
     def __getitem__(self, index):
         ret = super().__getitem__(index)
         audio_path = ret["audio_path"]
         feature_path = audio_path.replace(self.dataset_root, self.feature_root).replace(".wav", ".npy")
         ret["feature"] = torch.from_numpy(np.load(feature_path))
         return ret
-    
+
     @staticmethod
     def collate_fn(batch):
         ret = super().collate_fn(batch)
-        
+
         if ret == {}:
             return {}
 
@@ -221,7 +223,8 @@ class CustomDatasetADMA(CustomDataset):
         ret["rep"] = reps
         ret["rep_lengths"] = rep_lengths
         return ret
-    
+
+
 # Dynamic Batch Sampler
 class DynamicBatchSampler(Sampler[list[int]]):
     """Extension of Sampler that will do the following:
@@ -333,6 +336,7 @@ def load_dataset(
         durations = data_dict["duration"]
         if dataset_type == "CustomDatasetADMA":
             from functools import partial
+
             dataset_cls = partial(CustomDatasetADMA, dataset_root=dataset_root, feature_root=feature_root)
         elif dataset_type == "CustomDataset":
             dataset_cls = CustomDataset
@@ -373,6 +377,3 @@ def load_dataset(
 
 
 # collation
-
-
-

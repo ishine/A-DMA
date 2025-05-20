@@ -19,11 +19,11 @@ from f5_tts.model.modules import (
     ConvNeXtV2Block,
     ConvPositionEmbedding,
     DiTBlock,
+    SpeechAlignMLP,
+    TextAlignMLP,
     TimestepEmbedding,
     get_pos_embed_indices,
     precompute_freqs_cis,
-    SpeechAlignMLP,
-    TextAlignMLP
 )
 
 
@@ -163,16 +163,21 @@ class DiT(nn.Module):
         # set alignment depth
         self.text_align_depth = text_align_depth
         self.speech_align_depth = speech_align_depth
-        
+
         z_dim_text = [self.text_embed.text_embed.num_embeddings + 1]
-        self.text_align_layers = nn.ModuleList([
-            TextAlignMLP(sampling_ratios=[2,1], in_channels=self.dim, channels=align_mlp_dim, out_channels=z_dim) for z_dim in z_dim_text
-        ])
-        self.speech_align_layers = nn.ModuleList([
-            SpeechAlignMLP(sampling_ratios=[1,1], in_channels=self.dim, channels=align_mlp_dim, out_channels=z_dim) for z_dim in z_dim
-        ])
-        
-        
+        self.text_align_layers = nn.ModuleList(
+            [
+                TextAlignMLP(sampling_ratios=[2, 1], in_channels=self.dim, channels=align_mlp_dim, out_channels=z_dim)
+                for z_dim in z_dim_text
+            ]
+        )
+        self.speech_align_layers = nn.ModuleList(
+            [
+                SpeechAlignMLP(sampling_ratios=[1, 1], in_channels=self.dim, channels=align_mlp_dim, out_channels=z_dim)
+                for z_dim in z_dim
+            ]
+        )
+
         self.checkpoint_activations = checkpoint_activations
 
         self.initialize_weights()
@@ -250,9 +255,9 @@ class DiT(nn.Module):
             else:
                 x = block(x, t, mask=mask, rope=rope)
                 if zs_lens is not None and (i + 1) == self.speech_align_depth:
-                    zs = [projector(x, z_lens) for projector,z_lens in zip(self.speech_align_layers, zs_lens)]
+                    zs = [projector(x, z_lens) for projector, z_lens in zip(self.speech_align_layers, zs_lens)]
                 if zs_lens is not None and (i + 1) == self.text_align_depth:
-                    zs_text = [projector(x, z_lens) for projector,z_lens in zip(self.text_align_layers, lens)]
+                    zs_text = [projector(x, z_lens) for projector, z_lens in zip(self.text_align_layers, lens)]
 
         if self.long_skip_connection is not None:
             x = self.long_skip_connection(torch.cat((x, residual), dim=-1))

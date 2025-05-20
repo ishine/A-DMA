@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader, Dataset, SequentialSampler
 from tqdm import tqdm
 
 from f5_tts.model import CFM_ADMA
-from f5_tts.model.dataset import DynamicBatchSampler, collate_fn
+from f5_tts.model.dataset import DynamicBatchSampler
 from f5_tts.model.utils import default, exists
 
 
@@ -372,7 +372,13 @@ class ADMATrainer:
                         self.accelerator.log({"duration loss": dur_loss.item()}, step=global_update)
 
                     loss, diff_loss, proj_loss, ctc_loss, cond, pred = self.model(
-                        mel_spec, text=text_inputs, text_lens=text_lengths, zs=[rep], zs_lens=[rep_lengths], lens=mel_lengths, noise_scheduler=self.noise_scheduler
+                        mel_spec,
+                        text=text_inputs,
+                        text_lens=text_lengths,
+                        zs=[rep],
+                        zs_lens=[rep_lengths],
+                        lens=mel_lengths,
+                        noise_scheduler=self.noise_scheduler,
                     )
                     self.accelerator.backward(loss)
 
@@ -393,7 +399,14 @@ class ADMATrainer:
 
                 if self.accelerator.is_local_main_process:
                     self.accelerator.log(
-                        {"loss": loss.item(),"diff_loss": diff_loss.item(), "proj_loss": proj_loss.item(), "ctc_loss": ctc_loss.item(), "lr": self.scheduler.get_last_lr()[0]}, step=global_update
+                        {
+                            "loss": loss.item(),
+                            "diff_loss": diff_loss.item(),
+                            "proj_loss": proj_loss.item(),
+                            "ctc_loss": ctc_loss.item(),
+                            "lr": self.scheduler.get_last_lr()[0],
+                        },
+                        step=global_update,
                     )
                     if self.logger == "tensorboard":
                         self.writer.add_scalar("loss", loss.item(), global_update)

@@ -214,19 +214,11 @@ def load_checkpoint(model, ckpt_path, device: str, dtype=None, use_ema=True):
         for key in ["mel_spec.mel_stft.mel_scale.fb", "mel_spec.mel_stft.spectrogram.window"]:
             if key in checkpoint["model_state_dict"]:
                 del checkpoint["model_state_dict"][key]
-        try:
-            model.load_state_dict(checkpoint["model_state_dict"])
-        except:
-            print("Failed to load model, set strict=False")
-            model.load_state_dict(checkpoint["model_state_dict"], strict=False)
+        model.load_state_dict(checkpoint["model_state_dict"], strict=False)
     else:
         if ckpt_type == "safetensors":
             checkpoint = {"model_state_dict": checkpoint}
-        try:
-            model.load_state_dict(checkpoint["model_state_dict"])
-        except:
-            print("Failed to load model, set strict=False")
-            model.load_state_dict(checkpoint["model_state_dict"], strict=False)
+        model.load_state_dict(checkpoint["model_state_dict"], strict=False)
     del checkpoint
     torch.cuda.empty_cache()
 

@@ -190,5 +190,6 @@ def repetition_found(text, length=2, tolerance=10):
             return True
     return False
 
+
 def masked_mean(x, mask):
     return (x * mask).sum() / mask.sum()

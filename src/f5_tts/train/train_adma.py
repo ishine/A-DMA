@@ -65,7 +65,13 @@ def main(model_cfg):
         model_cfg_dict=OmegaConf.to_container(model_cfg, resolve=True),
     )
 
-    train_dataset = load_dataset(model_cfg.datasets.name, tokenizer, mel_spec_kwargs=model_cfg.model.mel_spec)
+    train_dataset = load_dataset(
+        model_cfg.datasets.name,
+        tokenizer,
+        mel_spec_kwargs=model_cfg.model.mel_spec,
+        dataset_root=model_cfg.datasets.dataset_root,
+        feature_root=model_cfg.datasests.feature_root,
+    )
     trainer.train(
         train_dataset,
         num_workers=model_cfg.datasets.num_workers,
