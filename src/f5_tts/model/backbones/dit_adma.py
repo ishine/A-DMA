@@ -211,12 +211,12 @@ class DiT(nn.Module):
         cond: float["b n d"],  # masked cond audio  # noqa: F722
         text: int["b nt"],  # text  # noqa: F722
         time: float["b"] | float[""],  # time step  # noqa: F821 F722
-        lens,
-        zs_lens,
         drop_audio_cond,  # cfg for cond audio
         drop_text,  # cfg for text
         mask: bool["b n"] | None = None,  # noqa: F722
-        cache=False,
+        zs_lens: list[int["b"]] | None = None,  # noqa: F722,F821
+        cache: bool = False,
+        lens: int["b"] | None = None,  # noqa: F821
     ):
         batch, seq_len = x.shape[0], x.shape[1]
         if time.ndim == 0:
@@ -242,21 +242,16 @@ class DiT(nn.Module):
         if self.long_skip_connection is not None:
             residual = x
 
-        # for block in self.transformer_blocks:
-        #     if self.checkpoint_activations:
-        #         # https://pytorch.org/docs/stable/checkpoint.html#torch.utils.checkpoint.checkpoint
-        #         x = torch.utils.checkpoint.checkpoint(self.ckpt_wrapper(block), x, t, mask, rope, use_reentrant=False)
-        #     else:
-        #         x = block(x, t, mask=mask, rope=rope)
         for i, block in enumerate(self.transformer_blocks):
             if self.checkpoint_activations:
                 # https://pytorch.org/docs/stable/checkpoint.html#torch.utils.checkpoint.checkpoint
                 x = torch.utils.checkpoint.checkpoint(self.ckpt_wrapper(block), x, t, mask, rope, use_reentrant=False)
             else:
                 x = block(x, t, mask=mask, rope=rope)
+            if self.training:
                 if zs_lens is not None and (i + 1) == self.speech_align_depth:
                     zs = [projector(x, z_lens) for projector, z_lens in zip(self.speech_align_layers, zs_lens)]
-                if zs_lens is not None and (i + 1) == self.text_align_depth:
+                if lens is not None and (i + 1) == self.text_align_depth:
                     zs_text = [projector(x, z_lens) for projector, z_lens in zip(self.text_align_layers, lens)]
 
         if self.long_skip_connection is not None:
