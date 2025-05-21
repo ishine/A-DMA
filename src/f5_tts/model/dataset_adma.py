@@ -203,12 +203,12 @@ class CustomDatasetADMA(CustomDataset):
 
     @staticmethod
     def collate_fn(batch):
-        ret = super().collate_fn(batch)
+        ret = CustomDataset.collate_fn(batch)
 
         if ret == {}:
             return {}
 
-        reps = [item["rep"] for item in batch]
+        reps = [item["feature"] for item in batch]
         rep_lengths = torch.LongTensor([len(rep) for rep in reps])
         max_rep_length = rep_lengths.amax()
 
@@ -220,8 +220,8 @@ class CustomDatasetADMA(CustomDataset):
 
         reps = torch.stack(padded_reps)
 
-        ret["rep"] = reps
-        ret["rep_lengths"] = rep_lengths
+        ret["feature"] = reps
+        ret["feature_lengths"] = rep_lengths
         return ret
 
 
@@ -337,7 +337,7 @@ def load_dataset(
         if dataset_type == "CustomDatasetADMA":
             from functools import partial
 
-            dataset_cls = partial(CustomDatasetADMA, dataset_root=dataset_root, feature_root=feature_root)
+            dataset_cls = partial(CustomDatasetADMA, dataset_root, feature_root)
         elif dataset_type == "CustomDataset":
             dataset_cls = CustomDataset
         else:
@@ -374,6 +374,3 @@ def load_dataset(
         )
 
     return train_dataset
-
-
-# collation

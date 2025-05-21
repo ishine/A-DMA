@@ -167,13 +167,13 @@ class DiT(nn.Module):
         z_dim_text = [self.text_embed.text_embed.num_embeddings + 1]
         self.text_align_layers = nn.ModuleList(
             [
-                TextAlignMLP(sampling_ratios=[2, 1], in_channels=self.dim, channels=align_mlp_dim, out_channels=z_dim)
+                TextAlignMLP([2, 1], in_channels=self.dim, channels=align_mlp_dim, out_channels=z_dim)
                 for z_dim in z_dim_text
             ]
         )
         self.speech_align_layers = nn.ModuleList(
             [
-                SpeechAlignMLP(sampling_ratios=[1, 1], in_channels=self.dim, channels=align_mlp_dim, out_channels=z_dim)
+                SpeechAlignMLP([1, 1], in_channels=self.dim, channels=align_mlp_dim, out_channels=z_dim)
                 for z_dim in z_dim
             ]
         )

@@ -6,7 +6,7 @@ from importlib.resources import files
 import hydra
 from omegaconf import OmegaConf
 
-from f5_tts.model import CFM_ADMA, Trainer
+from f5_tts.model import CFM_ADMA, ADMATrainer
 from f5_tts.model.dataset_adma import load_dataset
 from f5_tts.model.utils import get_tokenizer
 
@@ -39,7 +39,7 @@ def main(model_cfg):
     )
 
     # init trainer
-    trainer = Trainer(
+    trainer = ADMATrainer(
         model,
         epochs=model_cfg.optim.epochs,
         learning_rate=model_cfg.optim.learning_rate,
@@ -68,9 +68,10 @@ def main(model_cfg):
     train_dataset = load_dataset(
         model_cfg.datasets.name,
         tokenizer,
+        dataset_type="CustomDatasetADMA",
         mel_spec_kwargs=model_cfg.model.mel_spec,
         dataset_root=model_cfg.datasets.dataset_root,
-        feature_root=model_cfg.datasests.feature_root,
+        feature_root=model_cfg.datasets.feature_root,
     )
     trainer.train(
         train_dataset,

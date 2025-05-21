@@ -5,6 +5,7 @@ from f5_tts.model.backbones.unett import UNetT
 from f5_tts.model.cfm import CFM
 from f5_tts.model.cfm_adma import CFM as CFM_ADMA
 from f5_tts.model.trainer import Trainer
+from f5_tts.model.trainer_adma import ADMATrainer
 
 
-__all__ = ["CFM", "CFM_ADMA", "UNetT", "DiT", "DiT_ADMA", "MMDiT", "Trainer"]
+__all__ = ["CFM", "CFM_ADMA", "UNetT", "DiT", "DiT_ADMA", "MMDiT", "Trainer", "ADMATrainer"]

@@ -360,11 +360,11 @@ class ADMATrainer:
             for batch in current_dataloader:
                 with self.accelerator.accumulate(self.model):
                     text_inputs = batch["text"]
-                    mel_spec = batch["mel"].permute(0, 2, 1)
-                    mel_lengths = batch["mel_lengths"]
-                    rep = batch["rep"]
-                    rep_lengths = batch["rep_lengths"]
-                    text_lengths = batch["text_lengths"]
+                    mel_spec = batch["mel"].permute(0, 2, 1)  # b t d
+                    mel_lengths = batch["mel_lengths"]  # b
+                    feature = batch["feature"]  # b t d
+                    feature_lengths = batch["feature_lengths"]  # b
+                    text_lengths = batch["text_lengths"]  # b
 
                     # TODO. add duration predictor training
                     if self.duration_predictor is not None and self.accelerator.is_local_main_process:
@@ -375,8 +375,8 @@ class ADMATrainer:
                         mel_spec,
                         text=text_inputs,
                         text_lens=text_lengths,
-                        zs=[rep],
-                        zs_lens=[rep_lengths],
+                        zs=[feature],
+                        zs_lens=[feature_lengths],
                         lens=mel_lengths,
                         noise_scheduler=self.noise_scheduler,
                     )
@@ -395,7 +395,13 @@ class ADMATrainer:
 
                     global_update += 1
                     progress_bar.update(1)
-                    progress_bar.set_postfix(update=str(global_update), loss=loss.item())
+                    progress_bar.set_postfix(
+                        update=str(global_update),
+                        loss=loss.item(),
+                        diff_loss=diff_loss.item(),
+                        proj_loss=proj_loss.item(),
+                        ctc_loss=ctc_loss.item(),
+                    )
 
                 if self.accelerator.is_local_main_process:
                     self.accelerator.log(
