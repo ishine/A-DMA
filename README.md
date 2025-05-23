@@ -1,9 +1,34 @@
-# A-DMA: **A**ccelerating Diffusion-based Text-to-Speech Model Training with **D**ual **M**odality **A**lignment
+<h1 align="center"><strong>A-DMA: Accelerating Diffusion-based Text-to-Speech Model Training with Dual Modality Alignment</strong></h1>
 
-[![python](https://img.shields.io/badge/Python-3.10-brightgreen)](https://github.com/SWivid/F5-TTS)
-[![arXiv](https://img.shields.io/badge/arXiv-2410.06885-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/2410.06885)
-[![demo](https://img.shields.io/badge/GitHub-Demo%20page-orange.svg)](https://opendemopages.github.io/ademo/)
-[![lab](https://img.shields.io/badge/X--LANCE-Lab-grey?labelColor=lightgrey)](https://x-lance.sjtu.edu.cn/)
+<p align="center" style="font-size: 1 em; margin-top: 1em">
+<a href="https://choijeongsoo.github.io/">Jeongsoo Choi<sup>1*</sup></a>,  
+<a href="https://zhikangniu.github.io/">Zhikang Niu<sup>2,3*</sup></a>,  
+<a href="">Ji-Hoon Kim<sup>1<sup></a>,
+<a href="">Chunhui Wang<sup>4<sup></a>,
+<a href="https://mm.kaist.ac.kr/joon/">Joon Son Chung<sup>1<sup></a>,
+<a href="https://chenxie95.github.io/">Xie Chen<sup>2,3<sup></a> 
+</p>
+
+<p align="center">
+  <sup>1</sup>School of Electrical Engineering, KAIST, South Korea <br>
+  <sup>2</sup>MoE Key Lab of Artificial Intelligence, X-LANCE Lab, School of Computer Science, Shanghai Jiao Tong University, China <br>
+  <sup>3</sup>Shanghai Innovation Institute, China
+  <sup>4</sup>Geely, China &nbsp;&nbsp; <br>
+  <sup>*</sup>means equal contribution
+</p>
+
+<div align="center">
+  <a href="https://github.com/ZhikangNiu/A-DMA">
+    <img src="https://img.shields.io/badge/Python-3.10-brightgreen" alt="Python">
+  </a>
+  <a href="https://arxiv.org/abs/2410.06885">
+    <img src="https://img.shields.io/badge/arXiv-25xx.xxx-b31b1b.svg?logo=arXiv" alt="arXiv">
+  </a>
+  <a href="https://opendemopages.github.io/ademo/">
+    <img src="https://img.shields.io/badge/GitHub-Demo%20page-orange.svg" alt="Demo">
+  </a>
+</div>
+
 
 ## 📜 News
 🚀 [2025.5] We release all the code to promote the research of accelerating diffusion-based TTS models.
@@ -13,7 +38,8 @@
 ## 💡 Highlights
 1. **Dual Modality Alignment**: A novel training paradigm that aligns the text and audio modalities in a dual manner, enhancing the model's ability to generate fluent and faithful speech.
 2. **Plug and Play for diffusion-based TTS**: A-DMA can be easily integrated into existing diffusion-based TTS models, providing a simple yet effective way to improve their performance.
-3. **Accelerated Training**: A-DMA significantly reduces the training time of diffusion-based TTS models, making it feasible to train large-scale models on limited resources.
+3. **Accelerated Training**: A-DMA significantly accelerates the convergence of diffusion-based TTS models and maintains the same inference speed as the original models.
+4. **High-Quality Speech Generation**: A-DMA achieves high-quality speech generation with improved fluency and faithfulness, making it suitable for various TTS applications.
 4. **Open-Source**: A-DMA is open-sourced to promote research in the field of TTS and to provide a baseline for future work.
 ## 🛠️ Usage
 ### 1. Install environment and dependencies
