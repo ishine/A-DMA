@@ -11,7 +11,7 @@
 
 <p align="center">
   <sup>1</sup>School of Electrical Engineering, KAIST, South Korea <br>
-  <sup>2</sup>MoE Key Lab of Artificial Intelligence, X-LANCE Lab, School of Computer Science, Shanghai Jiao Tong University, China <br>
+  <sup>2</sup>MoE Key Lab of Artificial Intelligence, X-LANCE Lab, School of Computer Science,<br> Shanghai Jiao Tong University, China 
   <sup>3</sup>Shanghai Innovation Institute, China
   <sup>4</sup>Geely, China &nbsp;&nbsp; <br>
   <sup>*</sup>means equal contribution
