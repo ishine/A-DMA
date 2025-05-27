@@ -120,7 +120,15 @@ Our code is released under MIT License. If our work and codebase is useful for y
 }
 ```
 ```
-
+@misc{choi2025acceleratingdiffusionbasedtexttospeechmodel,
+      title={Accelerating Diffusion-based Text-to-Speech Model Training with Dual Modality Alignment}, 
+      author={Jeongsoo Choi and Zhikang Niu and Ji-Hoon Kim and Chunhui Wang and Joon Son Chung and Chen Xie},
+      year={2025},
+      eprint={2505.19595},
+      archivePrefix={arXiv},
+      primaryClass={eess.AS},
+      url={https://arxiv.org/abs/2505.19595}, 
+}
 ```
 
 
