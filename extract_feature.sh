@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0,1,2,3
 export OMP_NUM_THREADS=1
 
-nproc_per_node=
+nproc_per_node=4
 
 SSL_MODEL_PATH=facebook/hubert-large-ll60k # or local path
 
@@ -16,7 +16,7 @@ for subset in train-clean-100 train-clean-360 train-other-500;do
     echo "Process $AUDIO_ROOT"
     torchrun \
     --nnodes 1 \
-    --nproc_per_node 4 \
+    --nproc_per_node $nproc_per_node \
     extract_ssl_features.py \
     --audio-root-dir $AUDIO_ROOT \
     --output-dir     $OUTPUT_DIR \
