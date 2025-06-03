@@ -3,7 +3,7 @@
 <p align="center" style="font-size: 1 em; margin-top: 1em">
 <a href="https://choijeongsoo.github.io/">Jeongsoo Choi<sup>1*</sup></a>,  
 <a href="https://zhikangniu.github.io/">Zhikang Niu<sup>2,3*</sup></a>,  
-<a href="">Ji-Hoon Kim<sup>1<sup></a>,
+<a href="https://sites.google.com/view/jhoonkim/">Ji-Hoon Kim<sup>1<sup></a>,
 <a href="">Chunhui Wang<sup>4<sup></a>,
 <a href="https://mm.kaist.ac.kr/joon/">Joon Son Chung<sup>1<sup></a>,
 <a href="https://chenxie95.github.io/">Xie Chen<sup>2,3<sup></a> 
@@ -120,14 +120,11 @@ Our code is released under MIT License. If our work and codebase is useful for y
 }
 ```
 ```
-@misc{choi2025acceleratingdiffusionbasedtexttospeechmodel,
-      title={Accelerating Diffusion-based Text-to-Speech Model Training with Dual Modality Alignment}, 
-      author={Jeongsoo Choi and Zhikang Niu and Ji-Hoon Kim and Chunhui Wang and Joon Son Chung and Chen Xie},
-      year={2025},
-      eprint={2505.19595},
-      archivePrefix={arXiv},
-      primaryClass={eess.AS},
-      url={https://arxiv.org/abs/2505.19595}, 
+@article{choi2025accelerating,
+  title={Accelerating Diffusion-based Text-to-Speech Model Training with Dual Modality Alignment},
+  author={Choi, Jeongsoo and Niu, Zhikang and Kim, Ji-Hoon and Wang, Chunhui and Chung, Joon Son and Chen, Xie},
+  journal={arXiv preprint arXiv:2505.19595},
+  year={2025}
 }
 ```
 
