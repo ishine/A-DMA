@@ -17,7 +17,7 @@ for subset in train-clean-100 train-clean-360 train-other-500;do
     torchrun \
     --nnodes 1 \
     --nproc_per_node $nproc_per_node \
-    extract_ssl_features.py \
+    src/f5_tts/scripts/extract_ssl_features.py \
     --audio-root-dir $AUDIO_ROOT \
     --output-dir     $OUTPUT_DIR \
     --ssl-model-path $SSL_MODEL_PATH \
